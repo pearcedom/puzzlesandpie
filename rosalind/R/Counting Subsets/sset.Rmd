@@ -1,0 +1,66 @@
+---
+title: Counting Subsets
+output:
+  github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center')
+```
+
+```{r, include = FALSE}
+library(tidyverse)
+```
+
+#### We want to count the total possible number of subsets of the set *{1,2,…,n}*. This can be represented using Pascal's Triangle. The key concept is that the empty set { } is counted in addition.
+
+&nbsp;
+
+**{ }:** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
+**{1}:** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; 1 &nbsp; &nbsp; &nbsp; &nbsp;
+
+**{1, 2}:** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; 2 &nbsp; 1 &nbsp; &nbsp; &nbsp;
+
+**{1, 2, 3}:** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; 3 &nbsp; 3 &nbsp; 1 &nbsp; &nbsp;
+
+**{1, 2, 3, 4}:** &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; 4 &nbsp; 6 &nbsp; 4 &nbsp; 1 &nbsp;
+
+&nbsp;
+
+#### But more simply is `2^n`. So, all we need are two variables, `n` to define our set (as 1 to n) and our modulo value which the answer format requires.
+
+&nbsp;
+
+```{r}
+n <- 982
+modu <- 1000000
+```
+
+&nbsp;
+
+#### `2^982` (`4.087481 x 10^295`) is too large for R to comprehend acurately so we have to incrementally calculate our answer, using the principle that `2^3 %% 1000000` is exactly the same as `(2*2 %% 1000000)*2 %% 1000000`.
+
+&nbsp;
+
+```{r}
+output <- 1
+for (i in rep(2, n)) {
+  int <- output %% modu * (i %% modu)
+  output <- int %% modu
+}
+output
+```
+
+```{r, include = FALSE}
+n = 3
+seq <- 1:n
+
+lapply(2:n, function(x) {
+    replicate(10, sort(sample(seq, x))) %>%
+        data.frame() %>%
+        lapply(., list) %>%
+        unique()
+    }
+) %>% unlist(recursive = FALSE) %>% length() %>% sum(., n, 1)
+```

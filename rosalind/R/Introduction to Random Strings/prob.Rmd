@@ -1,0 +1,53 @@
+---
+title: "Introduction to Random Strings"
+author: "Dominic Pearce"
+date: "23 June 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(purrr)
+```
+
+```{r}
+input <- readLines("~/Downloads/rosalind_prob.txt")
+
+s <- strsplit(input[1], "")[[1]]
+A <- as.numeric(strsplit(input[2], " ")[[1]])
+
+cat(s, sep = " ")
+A
+```
+
+```{r}
+probCalc <- function(s, A){
+  AT <- (1 - A)/2
+  GC <- A/2
+  
+  nt.prob <- c("A" = AT, "T" = AT, "G" = GC, "C" = GC)
+  
+  nt.prob[s] %>% prod() %>% log10() %>% round(digits = 3)
+}
+```
+
+```{r, echo = FALSE}
+A <- 0.124
+
+AT <- (1 - A)/2
+GC <- A/2
+  
+c("A" = AT, "T" = AT, "G" = GC, "C" = GC)
+
+s[1:10]
+```
+
+```{r}
+probCalc(s, 0.074)
+
+map_dbl(A, function(x) probCalc(s, x))
+```
+

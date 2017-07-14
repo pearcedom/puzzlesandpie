@@ -1,0 +1,76 @@
+---
+title: "Finding a Protein Motif"
+author: "Dominic Pearce"
+date: "9 March 2016"
+output: html_document
+---
+
+## Our uniprot IDs
+```{r}
+ids <- c("A2Z669", "B5ZC00", "P07204_TRBM_HUMAN", "P20840_SAG1_YEAST")
+```
+
+## A function to grab the protein sequence associated with an ID and cut away any chaff
+```{r}
+sequenceGrabber <- function(x) {
+  
+  library(rvest)
+  
+    web.page <- read_html(paste("http://www.uniprot.org/uniprot/", x, ".fasta", collapse = "", sep = ""))
+    
+    sequence.info <- html_text(web.page)
+    
+    sequence.split <- unlist(strsplit(substr(sequence.info, 
+                                             which(strsplit(sequence.info, "")[[1]] == "\n")[1],
+                                             nchar(sequence.info)), ""))
+    
+   paste0(sequence.split[-which(sequence.split == "\n")], collapse = "")
+}
+
+sequenceGrabber("A2Z669")
+```
+
+## A function to chop into little pieces the same length (4) as our target motif
+```{r}
+pieces <- function(nt.seq){
+
+  as.vector(sapply(1:(nchar(nt.seq)-3), function(x) substr(nt.seq, x, x+3)))
+}
+
+pieces("ASDFDSAKFALSDFALSKDJFLASDKJ")
+```
+
+## A function to determine which of our length = 4 sequences match our motif
+```{r}
+motifFinder <- function(x){
+  
+  split.x <- unlist(strsplit(x, ""))
+  
+  if (split.x[1] == "N" & split.x[2] != "P" & (split.x[3] == "S" | split.x[3] == "T") & split.x[4] != "P") {return(TRUE)}
+  else {FALSE}
+}
+
+motifFinder("NNTT")
+
+motifFinder("NPTT")
+```
+
+## All the above wrapped into a single function to pass to `lapply()`
+```{r}
+motifPosition <- function(x){
+  
+  base.seq <- sequenceGrabber(x)
+  
+  lil.bits <- pieces(base.seq)
+  
+  lil.indexes <- sapply(lil.bits, motifFinder)
+  
+  which(lil.indexes)
+}
+```
+
+# The answer
+```{r}
+lapply(ids, motifPosition)
+```
+

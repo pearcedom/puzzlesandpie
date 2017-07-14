@@ -1,0 +1,27 @@
+---
+title: "Translating RNA into Protein"
+author: "Dominic A. Pearce"
+date: "3 March 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Create translator
+
+```{r}
+translator <- data.frame(AA = c("F", "L", "I", "V", "F", "L", "I", "V", "L", "L", "I", "V", "L", "L", "M", "V", "S", "P", "T", "A", "S", "P", "T", "A", "S", "P", "T", "A", "S", "P", "T", "A", "Y", "H", "N", "D", "Y", "H", "N", "D", "Stop", "Q", "K", "E", "Stop", "Q", "K", "E", "C", "R", "S", "G", "C", "R", "S", "G", "Stop", "R", "R", "G", "W", "R", "R", "G"), codons = c("UUU", "CUU", "AUU", "GUU", "UUC", "CUC", "AUC", "GUC", "UUA", "CUA", "AUA", "GUA", "UUG", "CUG", "AUG", "GUG", "UCU", "CCU", "ACU", "GCU", "UCC", "CCC", "ACC", "GCC", "UCA", "CCA", "ACA", "GCA", "UCG", "CCG", "ACG", "GCG", "UAU", "CAU", "AAU", "GAU", "UAC", "CAC", "AAC", "GAC", "UAA", "CAA", "AAA", "GAA", "UAG", "CAG", "AAG", "GAG", "UGU", "CGU", "AGU", "GGU", "UGC", "CGC", "AGC", "GGC", "UGA", "CGA", "AGA", "GGA", "UGG", "CGG", "AGG", "GGG"), stringsAsFactors = FALSE)
+row.names(translator) <- translator$codons
+```
+
+```{r}
+rna.base <- readLines("C:/Users/s1460988/Downloads/rosalind_prot.txt")
+rna.input <- substring(rna.base, seq(1, nchar(rna.base), 3), seq(3, nchar(rna.base), 3))
+
+protein.output <- translator[rna.input[1:(length(rna.input)-1)], 1]
+
+cat(paste0(protein.output, collapse = ""))
+```
+

@@ -1,0 +1,39 @@
+---
+title: "k-Mer Composition"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(combinat)
+library(seqinr)
+```
+
+
+```{r}
+s <- "CTTCGAAAGTTTGGGCCGAGTCTTACAGTCGGTCTTGAAGCAAAGTAACGAACTCCACGGCCCTGACTACCGAACCAGTTGTGAGTACTCAACTGGGTGAGAGTGCAGTCCCTATTGAGTTTCCGAGACTCACCGGGATTTTCGATCCAGCCTCAGTCCAGTCTTGTGGCCAACTCACCAAATGACGTTGGAATATCCCTGTCTAGCTCACGCAGTACTTAGTAAGAGGTCGCTGCAGCGGGGCAAGGAGATCGGAAAATGTGCTCTATATGCGACTAAAGCTCCTAACTTACACGTAGACTTGCCCGTGTTAAAAACTCGGCTCACATGCTGTCTGCGGCTGGCTGTATACAGTATCTACCTAATACCCTTCAGTTCGCCGCACAAAAGCTGGGAGTTACCGCGGAAATCACAG" %>% strsplit(., "") %>% .[[1]]
+```
+
+```{r}
+nucs <- c("A", "T", "G", "C")
+
+combinations <- replicate(100000, 
+          paste0(sample(nucs, replace = TRUE), collapse = "")
+          ) %>% 
+  unique() %>% 
+  sort()
+```
+
+```{r}
+kmers <- sapply(1:(length(s)-3), function(x) {
+  s[x:(x+3)] %>% paste0(collapse = "")
+})
+
+sapply(combinations, function(x) {
+  sum(kmers == x)
+})
+```

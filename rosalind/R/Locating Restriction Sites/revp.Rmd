@@ -1,0 +1,51 @@
+---
+title: Locating Restriction Sites
+author: Dominic Pearce
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(magrittr)
+library(purrr)
+source("/Volumes/igmm/sims-lab/Dominic/_PhD/Rbits/Functions/revComp.R")
+```
+
+### Our input
+```{r}
+s <- readLines("~/Downloads/rosalind_revp.txt")[-1] %>% paste0(collapse = "")
+
+substr(s, 1, 10)
+```
+
+### Our function
+```{r}
+locateRestrictionSites <- function(s){
+  #we're going to loop through our string in a sliding window of length 12
+  lapply(1:(nchar(s)-3), function(y){
+    #window sliding occurs here
+    s.sub <- substring(s,  y,  y+12)
+    
+    #then we take each chunk of our current window slice and break it into fragments of lengths 4 to 12,
+    #calculate the reverse compliment of these chunks and ask if the original and revc are identical
+    lengths <- lapply(4:ifelse(nchar(s.sub) < 12, nchar(s.sub), 12), function(x){
+      identical(revc(substring(s.sub, 1, x)), substring(s.sub, 1, x))
+      }
+      )
+    #the position of where identical(d, b) returns TRUE (+3) is the length of our restriction site
+    #we then combine this length with our sliding window position (y) which is the nucleotide where the restriction site begins
+    
+    ifelse(lengths > 0,  paste(y,  3 + lengths %>% unlist %>% which),  NA) %>% na.omit
+    }
+    #and arrange output for Rosalind
+  ) %>% unlist %>% cat(sep = "\n")
+}
+```
+
+### In action
+```{r}
+locateRestrictionSites(s)
+```

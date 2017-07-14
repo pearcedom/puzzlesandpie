@@ -1,0 +1,63 @@
+---
+title: "Enumerating Oriented Gene Orderings"
+author: "Dominic Pearce"
+date: "9 May 2016"
+output: html_document
+---
+
+```{r}
+library(magrittr)
+```
+
+## Our Rosalind-specified number
+```{r}
+n <- 3
+```
+
+## Sample from `1:n` to get all permutations
+```{r}
+permutations <- replicate(10000, sample(1:n, n)) %>% 
+  data.frame() %>% 
+  as.list() %>% 
+  unique()
+
+permutations
+```
+
+## Sample from a collection of 1s and -1 of length n to get our sign-assigment tool
+```{r}
+signage <- replicate(10000, sample(rep(c(1, -1), n), n)) %>% 
+  data.frame() %>% 
+  as.list() %>% 
+  unique()
+
+signage
+```
+
+## Combine the two together
+```{r}
+signed.perms <- lapply(signage, function(x) lapply(permutations, function(y) y*x)) %>% 
+  unlist(recursive = FALSE)
+
+
+
+signed.perms[seq(1, 48, 6)]
+```
+
+## Collect it all for Rosalind's stupid *stupid* `stupid` website
+```{r}
+#correct
+lapply(signed.perms, function(x) paste0(x, collapse = " ")) %>% 
+  unlist() %>% 
+  c(length(signed.perms), .) %>% 
+  cat(sep = "\n")
+
+#wrong and worthless
+lapply(signed.perms, function(x) paste0(x, collapse = "")) %>% 
+  unlist() %>% 
+  c(length(signed.perms), .) %>% 
+  cat(sep = "\n")
+
+
+```
+

@@ -1,0 +1,27 @@
+Post-traumatic Stress Disorder
+================
+Dominic Pearce
+
+``` r
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+source("/Volumes/igmm/sims-lab/Dominic/Functions/arrangeFasta.R")
+library(tidyverse)
+```
+
+Pretty simple - each column (i.e. an individual fasta sequence), one at a time, compare to all other columns once at a time. Sum the matches, calculate this as a percentage and subtract from 1 to get the distance.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Fiddle endlessly to get the formatting right for Rosalind...
+------------------------------------------------------------
+
+``` r
+dfr <- arrangeFasta("~/Downloads/rosalind_pdst-2.txt")
+n = length(dfr[[1]])
+
+output <- lapply(dfr, function(x)
+    lapply(data.frame(x == dfr),
+        function(y) 1 - (sum(y)/n)) %>% unlist) %>%
+    do.call(rbind, .)
+
+write.table(formatC(output, digits = 5, format = 'f'), "~/Desktop/ros_ans.txt")
+```

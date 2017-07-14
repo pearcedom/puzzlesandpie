@@ -1,0 +1,96 @@
+---
+title: "Mendel's First Law"
+author: "Dominic A. Pearce"
+date: "8 February 2016"
+output: 
+  html_document: 
+    highlight: kate
+    theme: united
+    toc: yes
+---
+
+# Load allele combos
+```{r}
+k <- 18 #homozygous dominant
+m <- 25 #heterozygous
+n <- 18 #homozygous recessive
+
+pop <- c(rep("k", k), rep("m", m), rep("n", n)); pop
+```
+
+## Start clock
+```{r}
+start <- Sys.time()
+```
+
+## Randomly sample `pop` to produce mating pairs
+```{r}
+sample(pop, 2)
+
+pop.samp <- replicate(1000000, paste(sample(pop, 2), collapse = ""))
+
+ggplot2::qplot(pop.samp)
+
+pop.samp[1:10]
+```
+
+## Calculate probabilities mate-pair will have an offspring with dominant allele
+```{r}
+prob.dominant <- sapply(1:1000000, function(x) 
+  if (pop.samp[x] == "kk") {
+    return(1)
+  } else if (pop.samp[x] == "km" | pop.samp[x] == "mk") {
+    return(1)
+  } else if (pop.samp[x] == "kn" | pop.samp[x] == "nk") {
+    return(1)
+  } else if (pop.samp[x] == "mm") {
+    return(0.75)
+  } else if (pop.samp[x] == "mn" | pop.samp[x] == "nm") {
+    return(0.50)
+  } else if (pop.samp[x] == "nn") {
+    return(0)
+  }
+)
+
+knitr::kable(data.frame(mating.pairs = pop.samp[1:10], probabilities = prob.dominant[1:10]))
+```
+
+## Take the average of these probabilities
+```{r}
+sum(prob.dominant)/1000000
+```
+
+## How long?
+```{r}
+Sys.time() - start
+```
+
+## Clean code
+```{r, eval=FALSE}
+k <- 18 #homozygous dominant
+m <- 25 #heterozygous
+n <- 18 #homozygous recessive
+
+pop <- c(rep("k", k), rep("m", m), rep("n", n)); pop
+
+pop.samp <- replicate(1000000, paste(sample(pop, 2), collapse = ""))
+
+prob.dominant <- sapply(1:1000000, function(x) 
+  if (pop.samp[x] == "kk") {
+    return(1)
+  } else if (pop.samp[x] == "km" | pop.samp[x] == "mk") {
+    return(1)
+  } else if (pop.samp[x] == "kn" | pop.samp[x] == "nk") {
+    return(1)
+  } else if (pop.samp[x] == "mm") {
+    return(0.75)
+  } else if (pop.samp[x] == "mn" | pop.samp[x] == "nm") {
+    return(0.50)
+  } else if (pop.samp[x] == "nn") {
+    return(0)
+  }
+)
+
+sum(prob.dominant)/1000000
+```
+

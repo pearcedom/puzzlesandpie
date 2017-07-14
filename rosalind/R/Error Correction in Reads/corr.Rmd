@@ -1,0 +1,94 @@
+---
+title: Error Correction in Reads
+output:
+  github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center')
+```
+
+```{r}
+library(tidyverse)
+library(seqinr)
+```
+
+[](http://rosalind.info/problems/corr/)
+
+##### Previous functions
+- [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)
+- [Counting Point Mutations](http://rosalind.info/problems/hamm/)
+
+```{r}
+rosRevc <- function(DNA) {
+    #substitute nucleotides
+    subs <- gsub("1", "C", gsub("0", "T", gsub("C", "G", gsub("T", "A", gsub("G", "1", gsub("A", "0", DNA))))))
+    #reverse string
+    reverse_subs <- strsplit(subs, "")[[1]] %>% rev() %>% paste0(collapse = "")
+    return(reverse_subs)
+}
+
+rosHamm <- function(s, t) {
+    #Count how many times each individual nucleotide in a sequence doesn't match its partner
+    sum(strsplit(s, "")[[1]] != strsplit(t, "")[[1]])
+}
+```
+
+```{r}
+reads <- read.fasta("~/Downloads/rosalind_corr.txt", as.string = TRUE, seqonly = TRUE)
+```
+
+##### The first step is to assign correct reads by checking that they (or their reverse compliment) have a partner
+```{r}
+match_index <- lapply(reads, function(x) {
+    #does our iterable match any other reads?
+    max(sum(x == reads),
+    #or does its reverse compliment?
+    sum(rosRevc(x) == reads) + 1
+    )
+#if there is at least one match by either of these then we know it's a correct read
+}) > 1
+
+matches <- reads[which(match_index)]
+mismatches <- reads[-which(match_index)]
+```
+
+##### Then we iterate through our mismatches to find which of our matches it (or its reverse compliment) differs with by only one nucleotide
+
+```{r, eval = FALSE}
+#iterate through mismatches
+lapply(mismatches, function(x) {
+    #then apply that mismatch one at a time to each matched reads to calculate hamming distances
+    lapply(matches, function(y) {
+        if(rosHamm(x, y) < 2){
+            paste0(x, "->", y)    
+        } else if (rosHamm(x, rosRevc(y)) < 2){
+            paste0(x, "->", rosRevc(y))    
+        }
+    #tidy up non-unique output
+    }) %>% unique()
+}) %>% unlist()
+```
+
+##### All bundled up
+
+```{r}
+rosCorr <- function(reads) {
+    match_index <- lapply(reads, function(x) {
+        max(sum(x == reads),
+        sum(rosRevc(x) == reads) + 1
+        )
+    }) > 1
+    matches <- reads[which(match_index)]
+    mismatches <- reads[-which(match_index)]
+    lapply(mismatches, function(x) {
+        lapply(matches, function(y) {
+            if(rosHamm(x, y) < 2){
+                paste0(x, "->", y)    
+            } else if (rosHamm(x, rosRevc(y)) < 2){
+                paste0(x, "->", rosRevc(y))    
+            }
+        }) %>% unique()
+    }) %>% unlist()
+}
+```

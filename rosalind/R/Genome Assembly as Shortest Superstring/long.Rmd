@@ -1,0 +1,101 @@
+---
+title: Genome Assembly as Shortest Superstring
+output:
+  github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center')
+```
+
+The problem [here](http://rosalind.info/problems/long/) is, given a set of nucleotide strings, assemble the shortest possible combination. For example :
+
+_ATTAGACCTG_  
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _CCTGCCGGAA_  
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _GCCGGAATAC_  
+&nbsp; &nbsp; &nbsp; _AGACCTGCCG_  
+**ATTAGACCTGCCGGAATAC**
+
+To solve we order our strings, find the largest flanking overlaps and then join, one at a time and for all possible orders.
+
+###Libraries
+```{r}
+library(tidyverse)
+library(seqinr)
+library(combinat)
+source("/Volumes/igmm-1/sims-lab/Dominic/Functions/Rosalind/longest-common-substring.R")
+source("/Volumes/igmm-1/sims-lab/Dominic/Functions/arrangeFasta.R")
+```
+
+###*__Kluge__*
+####*Noun*
+##### A kludge (or kluge) (/klʌdʒ/, /kluːʒ/, /kluːdʒ/) is a workaround or quick-and-dirty solution that is clumsy, inelegant, inefficient, difficult to extend and hard to maintain.
+
+#### Arrange our inputs, define parameters, calculate order permutations
+
+```{r}
+#s_vec <- c(s1 = "ATTAGACCTG", s2 = "CCTGCCGGAA", s3 = "AGACCTGCCG", s4 = "GCCGGAATAC")
+#s_lst <- lapply(s_vec, function(x) strsplit(x, "")) %>% unlist(recursive = FALSE)
+s_lst <- read.fasta("~/Downloads/rosalind_long.txt")
+perm_lst <- lapply(permn(4), function(x) {
+    s_lst[x]
+})
+
+n <- nchar(s_vec[1])
+```
+```{r, echo = FALSE}
+#Perm1
+knitr::kable(data.frame(t(data.frame(perm_lst[1]))))
+#Perm20
+knitr::kable(data.frame(t(data.frame(perm_lst[20]))))
+```
+
+
+
+```{r}
+superstrings <- lapply(perm_lst, function(boop){
+    #Working in order, grab the first element of our ordered string list
+    s <- boop[[1]]
+    #Then, one at a time, compare the subsequent strings to s, finding the largest flanking overlap possible and then merge on this overlap. Importantly as our superstring grows, we first have to check that our comparison string isn't found wholly within
+    for(i in boop[-1]) {
+        if(length(lcSubstring(s, i)) == length(i)){
+            s <- s
+        } else {
+            #To actually achieve this first get the last 10 nucleotides of s (as s will grew incrementally with each addition) and knock a nucleotide at a time off of the front of t and the end of i. Then find the first time that t and i are identical
+            t <- s[(length(s) - n + 1):length(s)]
+            overlaps <- lapply(0:(n-1), function(x) {
+                    all(t[(x + 1):n] == i[1:(n - x)])
+                }
+            )
+            n_cut <- n+1 - overlaps %>% unlist() %>% which() %>% .[1]
+        #Finally, remove the overlap in one string and join. If there is no overlap then just join
+        if(!is.na(n_cut)){
+            s <- c(s, boop[[2]][-c(1:n_cut)])    
+        } else {
+            s <- c(s, boop[[2]])
+        }        
+    }
+}
+    s    
+})
+```
+
+#### And the answer
+
+```{r}
+sapply(superstrings, length) %>% sort()
+superstrings
+```
+
+```{r, eval = FALSE}
+lapply(1:length(s_lst), function(i){
+    overlap_length <- lapply(setdiff(1:length(s_lst), i), function(x){
+        lcSubstring(s_lst[[i]], s_lst[[x]]) %>% length()
+        }) %>% unlist()
+    sum(overlap_length == max(overlap_length))
+    })
+```
+
+```{r}
+
+```

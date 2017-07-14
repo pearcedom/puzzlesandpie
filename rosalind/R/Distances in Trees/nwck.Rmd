@@ -1,0 +1,52 @@
+---
+title: "Distances in Trees"
+author: "Dominic Pearce"
+date: "28 July 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, root.dir = "/Volumes/igmm/sims-lab/Dominic/Labbook/zMisc/Rosalind/R/Distances in Trees/")
+```
+
+```{r}
+setwd("/Volumes/igmm/sims-lab/Dominic/Labbook/zMisc/Rosalind/R/Distances in Trees/")
+
+
+#library(ape)
+p.tree <- read.tree(text = "(rabbit,(dog,cat));")
+
+p.tree$Nnode
+
+plot.phylo(p.tree)
+
+(p.mtx <- cophenetic.phylo(p.tree))
+
+#library(phytools)
+asdf <- read.newick(text = "(cat, pony),dog;")
+
+phytools::plotTree(asdf, node.numbers = TRUE)
+
+
+```
+
+```{r}
+tree.k <- "(dog,cat);"
+
+n.leaves <- length(gregexpr(",", tree.k)[[1]]) + 1
+
+start <- "cat"
+finish <- "dog"
+
+open <- gregexpr("\\(", tree.k)[[1]][1]
+close <- gregexpr("\\)", tree.k)[[1]][1]
+root <- gregexpr(";", tree.k)[[1]][1]
+a <- gregexpr(start, tree.k)[[1]][1]
+b <- gregexpr(finish, tree.k)[[1]][1]
+
+a 
+
+
+
+```
+

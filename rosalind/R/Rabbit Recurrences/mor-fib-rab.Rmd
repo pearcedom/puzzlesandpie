@@ -1,0 +1,22 @@
+---
+title: "Mortal Fibonacci Rabbits"
+author: "Dominic A. Pearce"
+date: "18 February 2016"
+output: github_document
+---
+
+```{r}
+months <- 33
+
+litter <- 3
+
+nrabs <- c(1, 1)
+```
+
+```{r}
+for (i in 3:months){
+  nrabs[i] <- nrabs[i-1] + (nrabs[i-2] * litter)
+}
+
+nrabs
+```

@@ -1,0 +1,89 @@
+---
+title: Edit Distance
+author: Dominic Pearce
+output:
+  github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+[Problem : Minimum Edit Distance]("http://rosalind.info/problems/edit/")
+
+```{r}
+library(tidyverse)
+library(knitr)
+```
+
+### Input
+
+```{r}
+s <- "PLEASANTLY" %>% strsplit(., "") %>% .[[1]]
+t <- "MEANLY" %>% strsplit(., "") %>% .[[1]]
+```
+
+### Create a matrix of zeros `length(s) + 1` x `length(t) + 1`, and set the first row and column to 0-length(s) and 0:length(t respectively)
+
+```{r}
+mtxDefine <- function(s, t){
+    s_len <- length(s)
+    t_len <- length(t)
+    edit_mtx <- matrix(rep(0, ((s_len+1)*(t_len+1))), nrow = t_len+1, ncol = s_len+1)
+    edit_mtx[1,] <- 0:s_len
+    edit_mtx[,1] <- 0:t_len
+    colnames(edit_mtx) <- c("0", s)
+    row.names(edit_mtx) <- c("0", t)
+    edit_mtx
+}
+
+edit_mtx <- mtxDefine(s, t)
+```
+
+&nbsp;
+
+```{r, echo = FALSE}
+kable(edit_mtx)
+```
+
+&nbsp;
+
+### Fill matrix using following rules
+ - if s[j] == t[i]
+    - mtx[i, j] = mtx[i-1, j-1]
+    - else mtx[i, j] = which ever of the left, diagUpLeft, or up cells are smallest + 1
+
+```{r}
+for(i in 1:length(t)){
+    for(j in 1:length(s)){
+        if(s[j] == t[i]){
+            edit_mtx[i+1, j+1] <- edit_mtx[i, j]
+        } else {
+            edit_mtx[i + 1, j + 1] <- min(edit_mtx[i, j], edit_mtx[i, j+1], edit_mtx[i+1, j]) + 1
+        }
+    }
+}
+```
+
+&nbsp;
+
+```{r, echo = FALSE}
+kable(edit_mtx)
+```
+
+&nbsp;
+
+### As a heatmap
+
+&nbsp;
+
+```{r, echo = FALSE}
+library(ggthemes)
+library(viridis)
+hm_edit <- melt(edit_mtx)
+hm_edit$Var2 <- factor(hm_edit$Var2, levels = rev(levels(hm_edit$Var2)))
+ggplot(hm_edit, aes(x = Var1, y = Var2, fill = value)) +
+    geom_tile() +
+    scale_fill_viridis() +
+    theme_pander()
+```

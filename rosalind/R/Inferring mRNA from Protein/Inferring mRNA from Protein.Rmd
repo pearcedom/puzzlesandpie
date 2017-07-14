@@ -1,0 +1,69 @@
+---
+title: "Inferring mRNA from Protein"
+author: "Dominic Pearce"
+date: "18 April 2016"
+output: 
+  html_document: 
+    highlight: kate
+    theme: spacelab
+---
+
+# Load/Arrange data
+```{r}
+input <- readLines("C:/Users/domin/Downloads/rosalind_mrna (3).txt")
+
+modu <- 1000000
+```
+
+&nbsp;
+
+# Create redundency data frame
+#### The input is taken from the conversion table and allows us to count how many ways there are to achieve each protein
+```{r}
+conversion.frame <- data.frame(AA = c("F", "L", "I", "V", "F", "L", "I", "V", "L", "L", "I", "V", "L", "L", "M", "V", "S", "P", "T", "A", "S", "P", "T", "A", "S", "P", "T", "A", "S", "P", "T", "A", "Y", "H", "N", "D", "Y", "H", "N", "D", "Stop", "Q", "K", "E", "Stop", "Q", "K", "E", "C", "R", "S", "G", "C", "R", "S", "G", "Stop", "R", "R", "G", "W", "R", "R", "G"), stringsAsFactors = FALSE)
+  
+redundencies <- data.frame(table(conversion.frame$AA))
+redun.dfr <- data.frame(redundencies)
+
+knitr::kable(redun.dfr)
+```
+
+&nbsp;
+
+# For each amino acid in our input, return how many possible codons could have coded it 
+```{r}
+protein <- c(strsplit(input, "")[[1]], "Stop")
+
+protein[1:10]
+
+unproducts <- unlist(lapply(protein, function(x) redun.dfr$Freq[which(redun.dfr$Var1 == x)]))
+
+unproducts [1:10]
+```
+
+&nbsp;
+
+# Use a complicated little for loop which I got to work mostly by accident
+#### The answer is the product of `unproducts` modulo a million, **BUT** that answer is too large for the computer so...
+```{r}
+output <- 1
+for (i in unproducts) {
+  output <- output %% modu * (i %% modu)
+}
+
+output %% modu
+```
+
+&nbsp;
+
+#### In short ->   
+
+`prod(c(1, 2, 3, 4)) %% 1000000`  
+
+is the same as  
+
+`(((1 * 2) %% 1000000) * 3 %% 1000000) * 4 %% 1000000`
+
+&nbsp;
+
+#### This allows us to build out answer up piece by piece and not cause it to throw a wobbly. By calling `%%` on each step of the answer, it is never able to get larger than 1 million.

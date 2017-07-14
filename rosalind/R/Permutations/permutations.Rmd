@@ -1,0 +1,51 @@
+---
+title: "Untitled"
+author: "Dominic Pearce"
+date: "5 February 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+##Read in data as a character
+```{r}
+base.num <- as.numeric(readLines("C:/Users/s1460988/Downloads/rosalind_perm (4).txt"))
+
+base.num
+```
+
+##Create sequence from 1 to that number
+```{r}
+input = seq(1, as.numeric(base.num))
+
+input
+```
+
+##Randomly sample from that sequence (sample lengths = the input number)
+```{r}
+permutations <- replicate(100000, sample(input, length(input)))
+
+permutations[1:as.numeric(base.num), 1:5]
+```
+
+##Obligatory paste/subtr 
+```{r}
+perm.join <- paste(permutations, collapse = "")
+
+perm.nlets <- substring(perm.join, 
+                        seq(1, nchar(perm.join), length(input)), 
+                        seq(length(input),nchar(perm.join),length(input)))
+
+rbind(seq(1, nchar(perm.join), length(input))[1:5], seq(length(input),nchar(perm.join),length(input))[1:5])
+
+perm.nlets[1:5]
+
+length(unique(perm.nlets)) == factorial(as.numeric(base.num))
+
+
+
+asdf <- unique(perm.nlets)
+```
+

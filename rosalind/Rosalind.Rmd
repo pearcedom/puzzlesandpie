@@ -1,0 +1,62 @@
+---
+title: "Rosalind Problems"
+author: "Dominic Pearce"
+date: "16 October 2015"
+output: html_document
+---
+
+##Counting DNA Nucleotides
+```{r}
+#Load problem file
+ess <- colnames(read.delim("C:/Users/s1460988/Downloads/rosalind_dna (1).txt"))
+
+#Convert from one long string to individual letters
+split.ess <- strsplit(ess, split = "")
+
+#Count occurences
+table(split.ess)
+```
+
+
+##Transcribing DNA into RNA
+```{r}
+asdf <- colnames(read.delim("C:/Users/s1460988/Downloads/rosalind_rna (1).txt"))
+
+fdsa <- strsplit(asdf, "")
+
+qwer <- gsub("T", "U", fdsa[[1]])
+
+paste(qwer, collapse = "")
+```
+
+##
+```{r}
+asdf <- colnames(read.delim("C:/Users/s1460988/Downloads/rosalind_revc (3).txt"))
+
+fdsa <- strsplit(asdf, "")
+
+tmp1 <- gsub("A", "1", fdsa[[1]])
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+tmp5 <- gsub("1", "T", tmp4)
+tmp6 <- gsub("2", "G", tmp5)
+
+paste(rev(tmp6), collapse = "")
+```
+
+## Counting Point Mutations
+```{r}
+
+
+data <- as.matrix(read.delim("C:/Users/s1460988/Downloads/rosalind_hamm(1).txt", header = FALSE))
+
+data.tmp <- lapply(data, function(x) strsplit(x, ""))
+
+data.split <- as.data.frame(data.tmp, stringsAsFactors = FALSE)
+
+point.muts <- apply(data.split, 1, function(x) identical(x[[1]], x[[2]]))
+
+table(point.muts)
+```
+

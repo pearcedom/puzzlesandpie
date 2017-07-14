@@ -1,0 +1,10 @@
+base
+methods
+BiocInstaller
+datasets
+utils
+grDevices
+graphics
+stats
+magrittr
+reshape2

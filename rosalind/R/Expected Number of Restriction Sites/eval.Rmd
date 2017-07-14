@@ -1,0 +1,40 @@
+---
+title: Expected Number of Restriction Sites
+author: Dominic Pearce
+output:
+  github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+#
+
+```{r, echo = FALSE}
+library(tidyverse)
+```
+
+```{r}
+n <- 10
+s <- "AG"
+gc <- c(0.25, 0.5, 0.75)
+nuc <- c("A", "C", "G", "T")
+
+t <- Sys.time()
+lapply(gc, function(gc){
+replicate(100000,
+    sample(c("G", "C", "A", "T"),
+        n,
+        replace = TRUE,
+        prob = rep(c(gc/2, (1-gc)/2), each = 2))) %>%
+    data.frame(stringsAsFactors = FALSE) %>%
+    sapply(function(x)
+        length(
+            regmatches(paste0(x, collapse = ""),
+                gregexpr(s, paste0(x, collapse = "")))[[1]])
+    ) %>% sum/100000
+    }
+    )
+Sys.time() - t
+```

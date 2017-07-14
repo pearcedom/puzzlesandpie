@@ -1,0 +1,77 @@
+---
+title: "Overlap Graphs"
+author: "Dominic A. Pearce"
+date: "9 February 2016"
+output: 
+  html_document: 
+    highlight: kate
+    theme: united
+    toc: yes
+---
+
+## Arrange Data
+```{r}
+data.base <- seqinr::read.fasta("C:/Users/s1460988/Downloads/rosalind_grph (1).txt")
+
+data.base[[1]]
+
+as.character(data.base[[1]])
+
+as.character(data.base[[1]])[c(1:3, (length(data.base[[1]])-2):length(data.base[[1]]))]
+
+data <- lapply(data.base, function(x) as.character(x)[c(1:3, (length(x)-2):length(x))])
+
+data[1:3]; print("...")
+```
+
+## Find overlapping codons
+
+```{r}
+overlap.dfr <- data.frame(
+  starts = sapply(data, function(x) paste(x[1:3], collapse = "")), 
+  ends = sapply(data, function(x) paste(x[4:6], collapse = "")))
+
+knitr::kable(head(overlap.dfr))
+
+laps <- as.character(overlap.dfr[[2]])[1] == as.character(overlap.dfr[[1]])
+
+laps
+
+which(laps)
+
+row.names(overlap.dfr)[which(laps)]
+
+overlap.base <- lapply(1:nrow(overlap.dfr), function(x) {
+  laps <- as.character(overlap.dfr[[2]])[x] == as.character(overlap.dfr[[1]])
+  laps[x] <- FALSE
+  row.names(overlap.dfr)[which(laps)]
+  }
+)
+
+overlap.output <- unlist(lapply(1:length(overlap.base), function(x) sapply(overlap.base[[x]], function(y) paste(row.names(overlap.dfr)[x], y, collapse = ""))))
+
+cat(overlap.output, sep = "\n")
+```
+
+## Clean Code
+```{r, eval=FALSE}
+data.base <- seqinr::read.fasta("C:/Users/s1460988/Downloads/rosalind_grph (1).txt")
+
+data <- lapply(data.base, function(x) as.character(x)[c(1:3, (length(x)-2):length(x))])
+
+overlap.dfr <- data.frame(
+  starts = sapply(data, function(x) paste(x[1:3], collapse = "")), 
+  ends = sapply(data, function(x) paste(x[4:6], collapse = "")))
+
+overlap.base <- lapply(1:nrow(overlap.dfr), function(x) {
+  laps <- as.character(overlap.dfr[[2]])[x] == as.character(overlap.dfr[[1]])
+  laps[x] <- FALSE
+  row.names(overlap.dfr)[which(laps)]
+})
+
+overlap.output <- unlist(lapply(1:length(overlap.base), function(x) sapply(overlap.base[[x]], function(y) paste(row.names(overlap.dfr)[x], y, collapse = ""))))
+
+cat(overlap.output, sep = "\n")
+```
+
+

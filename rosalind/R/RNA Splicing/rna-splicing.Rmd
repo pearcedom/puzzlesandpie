@@ -1,0 +1,55 @@
+---
+title: "RNA Splicing"
+author: "Dominic Pearce"
+date: "31 March 2016"
+output: html_document
+---
+
+# {.tabset}
+
+## Protein Translating Function
+This is from a previous solution
+
+```{r}
+translateRNA <- function(oligonucleotide) {
+  
+  translator <- data.frame(AA = c("F", "L", "I", "V", "F", "L", "I", "V", "L", "L", "I", "V", "L", "L", "M", "V", "S", "P", "T", "A", "S", "P", "T", "A", "S", "P", "T", "A", "S", "P", "T", "A", "Y", "H", "N", "D", "Y", "H", "N", "D", "Stop", "Q", "K", "E", "Stop", "Q", "K", "E", "C", "R", "S", "G", "C", "R", "S", "G", "Stop", "R", "R", "G", "W", "R", "R", "G"), codons = c("TTT", "CTT", "ATT", "GTT", "TTC", "CTC", "ATC", "GTC", "TTA", "CTA", "ATA", "GTA", "TTG", "CTG", "ATG", "GTG", "TCT", "CCT", "ACT", "GCT", "TCC", "CCC", "ACC", "GCC", "TCA", "CCA", "ACA", "GCA", "TCG", "CCG", "ACG", "GCG", "TAT", "CAT", "AAT", "GAT", "TAC", "CAC", "AAC", "GAC", "TAA", "CAA", "AAA", "GAA", "TAG", "CAG", "AAG", "GAG", "TGT", "CGT", "AGT", "GGT", "TGC", "CGC", "AGC", "GGC", "TGA", "CGA", "AGA", "GGA", "TGG", "CGG", "AGG", "GGG"), stringsAsFactors = FALSE)
+row.names(translator) <- translator$codons
+  
+  rna.input <- substring(oligonucleotide, seq(1, nchar(oligonucleotide), 3), seq(3, nchar(oligonucleotide), 3))
+  
+  protein.output <- translator[rna.input[1:(length(rna.input)-1)], 1]
+  
+  paste0(protein.output, collapse = "")
+}
+```
+
+## Remove introns with `gsub()` in a loop
+
+```{r}
+# Load/arrange data
+input.base <- paste0(readLines("C:/Users/domin/Downloads/rosalind_splc (1).txt"), collapse = "")
+
+input <- strsplit(input.base, ">Rosalind_[0-9]+")[[1]]
+
+gene <- input[2]
+
+introns <- input[3:length(input)]
+
+#Remove introns
+
+spliced <- gene
+
+for (i in introns) {
+  spliced <- gsub(i, "", spliced)
+}
+
+```
+
+## Translate into protein
+
+```{r}
+cat(translateRNA(spliced))
+```
+
+

@@ -1,0 +1,153 @@
+---
+title: "Counting GC Content"
+author: "Dominic Pearce"
+date: "25 January 2016"
+output: slidy_presentation
+---
+
+## Counting GC Content
+Perform extremely annoying process of getting the data in a managable form
+```{r}
+input.raw <- readLines("//cmvm.datastore.ed.ac.uk/igmm/sims-lab/Dominic/_PhD/Projects/Labbook/zMisc/Rosalind/GC Content/rosalind_gc.txt")
+```
+
+## Counting GC Content
+Perform extremely annoying process of getting the data in a managable form
+```{r}
+input.raw[1:4]
+```
+
+## Counting GC Content
+Perform extremely annoying process of getting the data in a managable form
+```{r}
+input.raw[1:4]
+
+length(input.raw)
+```
+
+## Counting GC Content
+Perform extremely annoying process of getting the data in a managable form
+```{r}
+input.raw[1:4]
+
+length(input.raw)
+
+nchar(input.raw[2])
+```
+
+## Counting GC Content
+`Paste()` together as one long string and then split by the FASTA deliminator '>Rosalind_xxxx', leaving only the nucleotide information
+```{r}
+input.int <- as.data.frame(strsplit(paste(input.raw, collapse = ""), ">Rosalind_...."))
+
+substr(input.int[[1]][2:5], 1, 6)
+```
+
+Note: this removes the ">Rosalind_xxxx" information anonymising the different nucleotide strings. This is something must be overcome later on.
+
+## Counting GC Content
+`Paste()` together as one long string and then split by the FASTA deliminator '>Rosalind_xxxx', leaving only the nucleotide information
+```{r}
+input.int <- as.data.frame(strsplit(paste(input.raw, collapse = ""), ">Rosalind_...."))
+
+substr(input.int[[1]][2:5], 1, 6)
+```
+
+Split into individual nucleotides and remove list nesting (making sure to set `recursive = FALSE`)
+
+```{r}
+input.int2 <- apply(input.int, 1, function(x) strsplit(x, ""))
+
+input.int2[[2]][[1]][1:6]
+
+input <- unlist(input.int2, recursive = FALSE)[2:length(input.int2)]
+```
+
+## *Finally* our input for the actual question
+```{r}
+lapply(input, function(x) head(x[1:6]))
+```
+
+## Counting GC Content
+Count nucleotide distributions for each case
+```{r}
+nucleotides <- data.frame(sapply(1:length(input), function(x) table(input[x])))
+
+nucleotides
+```
+
+## Counting GC Content
+Count nucleotide distributions for each case
+```{r}
+nucleotides <- data.frame(sapply(1:length(input), function(x) table(input[x])))
+
+nucleotides
+```
+
+Calcualte GC content as a percentage
+```{r}
+GC.content <- sapply(nucleotides, function(x) (x[2] + x[3])/sum(x)*100)
+```
+
+## Counting GC Content
+GC percentage
+```{r}
+GC.content
+```
+
+## Counting GC Content
+GC percentage
+```{r}
+GC.content
+```
+
+Determine the highest percentage
+```{r}
+max(GC.content)
+```
+
+## Counting GC Content
+GC percentage
+```{r}
+GC.content
+```
+
+Determine the highest percentage
+```{r}
+max(GC.content)
+```
+
+Which percentage that is
+```{r}
+which.max(GC.content)
+```
+
+## Counting GC Content
+GC percentage
+```{r}
+GC.content
+```
+
+Determine the highest percentage
+```{r}
+max(GC.content)
+```
+
+Which percentage that is
+```{r}
+which.max(GC.content)
+```
+
+And finally which instance of the lines containing the character ">" this in turn corresponds to in our original `input.raw`.
+
+```{r}
+grep(">", input.raw)
+
+grep(">", input.raw)[which.max(GC.content)]
+```
+
+## Subsetting by this index gives us our FASTA ID
+
+```{r}
+input.raw[grep(">", input.raw)[which.max(GC.content)]]
+```

@@ -1,0 +1,46 @@
+---
+title: Catalan numbers again
+author: Dominic Pearce
+output:
+  github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center')
+```
+```{r, echo = FALSE}
+library(tidyverse)
+```
+
+
+```{r}
+catN <- function(n) {
+    factorial(2*n) / (factorial(n+1) * factorial(n))
+}
+
+cat_dfr <- lapply(1:10, function(n) {
+    data.frame(n = n, catalan = catN(n))
+}) %>% do.call(rbind, .)
+```
+
+```{r, echo = FALSE}
+knitr::kable(cat_dfr)
+```
+
+#### AUAUGCCGAUUA
+##### 5
+
+#### AUAUGCAUGCAU
+##### 19
+
+#### GCAUAUAUAUUAGC
+##### 28
+
+#### AUGCUUAAGCAUGCAU
+##### 16
+
+#### GCGCGCAU
+##### 5
+
+#### GCAUAUAUUAGC
+##### 10

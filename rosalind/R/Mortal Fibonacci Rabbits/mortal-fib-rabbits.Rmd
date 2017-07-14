@@ -1,0 +1,34 @@
+---
+title: "Mortal Fibonacci Rabbits"
+author: "Dominic A. Pearce"
+date: "3 March 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+months <- 6
+
+life <- 3
+
+nrabs <- c(1, 1)
+#alive.rabs <- NULL
+```
+
+```{r}
+for (i in 3:months){
+  
+  if (i <= life){
+  nrabs[i] <- nrabs[i-1] + nrabs[i-2]  
+  } else if (i == life+1 | i == life+2) {
+  nrabs[i] <- nrabs[i-1] + nrabs[i-2] - nrabs[i-life]
+  } else {
+  nrabs[i] <- nrabs[i-1] + nrabs[i-2] - (nrabs[i-life]-nrabs[i-life-1])
+  }
+}
+  
+nrabs
+```

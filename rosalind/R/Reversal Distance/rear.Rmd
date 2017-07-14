@@ -1,0 +1,116 @@
+---
+title: rear
+author: Dominic Pearce
+output:
+  github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(knitr)
+```
+
+```{r}
+library(tidyverse)
+```
+
+# Reversal Distance {.tabset}
+
+## Workings
+
+### Function to normalise `s` to `1:n`
+
+```{r}
+normaliseSequential <- function(s, t) {
+    #i.e. if 312 were transformed to 123, calculate what would 231 become
+    lapply(1:length(s), function(x){
+        which(t == s[x])
+        }) %>% unlist
+    }
+```
+
+### Function to calculate all reversals
+
+```{r}
+allReversals <- function(t) {
+    #for reversal size
+    map(2:(anchor_pos-1), function(r_size){
+        #calculate the reversal for each position possible
+        map(2:(len-r_size), function(x) {
+            reversal <- c(t[1:(x-1)], rev(t[x:(x+r_size-1)]), t[(x+r_size):len])
+            reversal
+            })
+        }) %>% unlist(recursive = FALSE)
+}
+```
+
+### Assign a bunch of variables
+
+```{r}
+#Rosalind style input
+s_base <- c(3, 9, 10, 4, 1, 8, 6, 7, 5, 2)
+t_base <- c(2, 9,  8, 5, 1, 7, 3, 4, 6, 10)
+#Value of trailing anchor
+anchor_pos <- length(s_base) + 1
+
+#Normalise to 1:n
+s <- s_base %>% sort %>% c(0, ., anchor_pos)
+t <- normaliseSequential(s_base, t_base)
+
+#Anchor t with flanking 0 and n+1
+t_current <- c(0, t, anchor_pos)
+len <- length(t_current)
+```
+
+### Calculate the number of reversals
+
+```{r}
+num_rev <- 0
+while(!identical(t_current, s)){
+    #Calculate all reversals
+    rev_lst <- allReversals(t_current)
+    #Select best reversal based on minimal break points
+    break_n <- lapply(rev_lst, function(x) which(abs(diff(x)) != 1) %>% length)
+    t_current <- rev_lst[[which.min(break_n)]]
+    #Housekeeping
+    num_rev <- num_rev + 1
+    print(t_current)
+}
+print(paste0("Number of reversals = ", num_rev))
+```
+
+## Real data
+
+### Input
+
+```{r}
+input <- read.csv("~/Downloads/rosalind_rear-5.txt", header = FALSE, sep = " ") %>% t %>% data.frame
+input %>% kable
+```
+
+### Calculation
+#### Which doesn't work...
+
+```{r}
+lapply(seq(1, nrow(input), 2), function(x) {
+    s_base <- input[[x]]
+    t_base <- input[[x+1]]
+    anchor_pos <- length(s_base) + 1
+
+    s <- s_base %>% sort %>% c(0, ., anchor_pos)
+    t <- normaliseSequential(s_base, t_base)
+    t_current <- c(0, t, anchor_pos)
+    len <- length(t_current)
+
+    num_rev <- 0
+    while(!identical(t_current, s)){
+        rev_lst <- allReversals(t_current)
+        break_n <- lapply(rev_lst, function(x) which(abs(diff(x)) != 1) %>% length)
+        t_current <- rev_lst[[which.min(break_n)]]
+        num_rev <- num_rev + 1
+    }
+    num_rev
+
+    }) %>% unlist
+```

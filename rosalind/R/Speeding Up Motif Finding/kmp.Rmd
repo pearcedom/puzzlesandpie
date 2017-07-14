@@ -1,0 +1,97 @@
+---
+title: "Speeding Up Motif Finding"
+author: "Dominic Pearce"
+date: "28 June 2016"
+output: html_document
+---
+
+```{r, echo=FALSE}
+library(purrr)
+```
+
+# {.tabset}
+
+## Our function to solve the problem
+```{r}
+rosFunc <- function(s, k){  #difficult to name functions when you only slightly understand what they do
+  i <- c()
+  ii <- c()
+  
+  for (j in 2:k){
+    i[(j-1)] <- substring(s, j, k)
+  }
+  
+  for(j in 2:k){
+    ii[j-1] <- substring(s, 1, (k-j+1))
+  }
+  
+  hit <- intersect(i, ii)
+  
+  ifelse(length(hit) < 1, 0, max(nchar(hit)))
+  
+}
+```
+
+## What is this actually doing? (Using example data)
+
+#### First for a given `k` calculate `s[j:k]` for all `j`s, where `1 < j < k`
+```{r}
+s <- "CAGCATGGTATCACAGCAGAG"
+n <- nchar(s)
+k <- 17
+
+i <- c()
+for (j in 2:k){
+  i[(j-1)] <- substring(s, j, k)
+}
+
+i
+```
+
+#### Then, again for all possible `j`s, calculate `s[1:k-j+1]`
+```{r}
+ii <- c()
+for(j in 2:k){
+  ii[j-1] <- substring(s, 1, (k-j+1))
+}
+
+ii
+```
+
+#### Now we just need to find the longest common string between these two sets of strings
+```{r}
+hit <- intersect(i, ii)
+
+hit
+
+max(nchar(hit))
+```
+
+And finally, as we'll be dealing with `P[k] = 0` often, which effectively return 'empty' then we fiddle with the output a little but it's not important.
+```{r}
+ifelse(length(hit) < 1, 0, max(nchar(hit)))
+```
+
+## With example data
+```{r}
+map_dbl(1:n, function(x) rosFunc(s, x))
+```
+
+## Is time to completetion linear?
+```{r, warning=FALSE, cache=TRUE}
+start <- Sys.time()
+
+times <- c()
+
+for (i in 1:400){
+  s.rand <- sample(c("A", "C", "G", "T"), i, replace = TRUE) %>% paste0(collapse = "")
+  n.rand <- nchar(s.rand)
+  
+  times[i] <- system.time(map_dbl(1:n.rand, function(x) rosFunc(s.rand, x)))
+}
+
+Sys.time() - start
+
+plot(times)
+```
+

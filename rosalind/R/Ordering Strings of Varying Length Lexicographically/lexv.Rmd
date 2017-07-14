@@ -1,0 +1,65 @@
+---
+title: Ordering Strings of Varying Length Lexicographically
+output:
+  github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center', fig.width = 12, fig.height = 5)
+library(tidyverse)
+```
+
+```{r}
+alpbet <- c("Y", "B", "O", "R", "W", "I", "Z", "S", "H", "M", "G")
+len <- length(alpbet)
+n <- 4
+```
+
+### First calculate all possible length `n` permutations, in order
+
+```{r}
+len_n <- lapply(1:len, function(x) {
+    lapply(1:len, function(y) {
+        lapply(1:len, function(z) {
+            lapply(1:len, function(a){
+                c(alpbet[x], alpbet[y], alpbet[z], alpbet[a])
+                })
+            })
+        })
+    }) %>%
+    unlist(recursive = FALSE) %>%
+    unlist(recursive = FALSE) %>%
+    unlist(recursive = FALSE)
+
+head(len_n)
+```
+
+### Then remove from the full length permutations to get the smaller versions
+
+```{r}
+len_all <- lapply(len_n, function(x) {
+    lapply(1:n, function(y) {
+        paste0(x[1:y], collapse = "")
+        })
+    }) %>% unlist(recursive = FALSE) %>% unique()
+
+head(len_all)
+```
+
+#### Far too much data to look at very easily at this point
+
+```{r}
+sapply(len_all, nchar) %>% table()
+
+data.frame(length = sapply(len_all, nchar)[1:50], lab = unlist(len_all[1:50])) %>%
+    ggplot(aes(x = lab, y = length, label = lab)) +
+        geom_bar(stat = 'identity', width = 0.05) +
+        geom_point() +
+        theme(axis.text.x = element_text(angle = 270))
+```
+
+&nbsp;
+
+```{r}
+len_all %>% unlist() %>% cat(sep = "\n")
+```

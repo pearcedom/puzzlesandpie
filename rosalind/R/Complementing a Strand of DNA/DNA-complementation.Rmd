@@ -1,0 +1,195 @@
+---
+title: "DNA-complementation"
+author: "Dominic Pearce"
+date: "25 January 2016"
+output: slidy_presentation
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.align='center')
+```
+
+## Complementing DNA
+Read in data using `readLines()`
+```{r}
+input.raw <- readLines("//cmvm.datastore.ed.ac.uk/igmm/sims-lab/Dominic/_PhD/Projects/Labbook/zMisc/Rosalind/Complementing a Strand of DNA/rosalind_revc.txt")
+
+substr(input.raw, 1, 6)
+```
+
+## Complementing DNA
+Read in data using `readLines()` and split to individual nucleotides with `strsplit()`
+```{r}
+input.raw <- readLines("//cmvm.datastore.ed.ac.uk/igmm/sims-lab/Dominic/_PhD/Projects/Labbook/zMisc/Rosalind/Complementing a Strand of DNA/rosalind_revc.txt")
+
+substr(input.raw, 1, 6)
+
+input <- strsplit(input.raw, "")[[1]]
+
+head(input)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+
+head(input)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+
+head(input)
+head(tmp1)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+
+head(tmp1)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+
+head(tmp1)
+head(tmp2)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+
+head(tmp2)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+
+head(tmp2)
+head(tmp3)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+
+head(tmp3)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+
+head(tmp3)
+head(tmp4)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+tmp5 <- gsub("1", "T", tmp4)
+
+head(tmp4)
+```
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+tmp5 <- gsub("1", "T", tmp4)
+
+head(tmp4)
+head(tmp5)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+tmp5 <- gsub("1", "T", tmp4)
+complement <- gsub("2", "G", tmp5)
+
+head(tmp5)
+```
+
+## Complementing DNA
+Form complement strand using a series of character replacements with `gsub()`
+```{r}
+tmp1 <- gsub("A", "1", input)
+tmp2 <- gsub("C", "2", tmp1)
+tmp3 <- gsub("T", "A", tmp2)
+tmp4 <- gsub("G", "C", tmp3)
+tmp5 <- gsub("1", "T", tmp4)
+complement <- gsub("2", "G", tmp5)
+
+head(tmp5)
+head(complement)
+```
+
+## Complementing DNA
+This can also be achieved in one line by building the function recursively
+```{r}
+complement <- gsub("2", "G", gsub("1", "T", gsub("G", "C", gsub("T", "A", gsub("C", "2", gsub("A", "1", input))))))
+```
+
+## Complementing DNA
+Reverse the nucleotides using `rev()` and group together as one string with `paste()` for easy export back to Rosalind
+```{r}
+DNA.out <- paste(rev(complement), collapse = "")
+```
+
+## Complementing DNA
+Reverse the nucleotides using `rev()` and group together as one string with `paste()` for easy export back to Rosalind 
+```{r}
+DNA.out <- paste(rev(complement), collapse = "")
+
+substring(input.raw, 1, 6)
+```
+
+taking us from this
+
+## Complementing DNA
+Reverse the nucleotides using `rev()` and group together as one string with `paste()` for easy export back to Rosalind 
+```{r}
+DNA.out <- paste(rev(complement), collapse = "")
+
+substring(input.raw, 1, 6)
+
+substring(DNA.out, 1, 6)
+```
+
+to this.

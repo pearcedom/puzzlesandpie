@@ -1,0 +1,106 @@
+---
+title: "Enumerating k-mers Lexicographically"
+author: "Dominic A. Pearce"
+date: "5 April 2016"
+output: html_document
+---
+
+# {.tabset}
+
+## The straight-forward way
+
+```{r}
+nucleotides <- c("B", "F", "I", "T", "P", "S")
+
+combinations <- "START!"
+for (x in nucleotides) {
+  for (y in nucleotides) {
+    for (z in nucleotides) {
+      combinations <- c(combinations, paste0(x, y, z))
+    }
+  }
+}
+
+cat(combinations, sep = "\n")
+```
+
+## The better way {.tabset}
+
+### First Half of the function
+
+#### First we define how many loops we'll need (based on `n`)
+```{r}
+n <- 6
+
+alpbet <- letters[(27-n):26]
+
+alpbet
+```
+
+#### Then we build our for loops up
+
+```{r}
+first.half <- ""
+for (i in alpbet) {
+  first.half <- paste0(first.half, paste0("for (", i,  " in nucleotides) {"))
+}
+
+first.half
+```
+```{r, eval=FALSE}
+"for (u in nucleotides) {
+  for (v in nucleotides) {
+    for (w in nucleotides) {
+      for (x in nucleotides) {
+        for (y in nucleotides) {
+          for (z in nucleotides) {"
+```
+
+### Now we do similarly for the second half of the function
+
+```{r}
+second.half <- paste0("combinations <- c(combinations, paste0(", paste0(alpbet, collapse = ", "), "))", paste0(rep("}", length(alpbet)), collapse =""))
+
+second.half
+```
+```{r, eval=FALSE}
+            "
+              combinations <- c(combinations, paste0(u, v, w, x, y, z))
+            }
+          }
+        }
+      }
+    }
+  }
+"
+```
+
+### And finally join the two and run with `eval(parse(text = ))`
+```{r}
+join.func <- paste0(first.half, second.half)
+
+join.func
+```
+```{r, eval=FALSE}
+"for (u in nucleotides) {
+  for (v in nucleotides) {
+    for (w in nucleotides) {
+      for (x in nucleotides) {
+        for (y in nucleotides) {
+          for (z in nucleotides) {
+            combinations <- c(combinations, paste0(u, v, w, x, y, z))
+            }
+          }
+        }
+      }
+    }
+  }
+"
+```
+```{r}
+combinations <- "START!"
+eval(parse(text = join.func))
+
+combinations[1:100]
+```
+

@@ -1,0 +1,53 @@
+---
+title: "Consensus and Profile"
+author: "Dominic Pearce"
+date: "16 June 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(seqinr)
+library(purrr)
+```
+
+##Fiddle with fasta files
+```{r}
+arrangeFasta <- function(file.path){
+  library(seqinr)
+  
+read.fasta(file.path, seqonly = TRUE) %>% 
+  map(function(x) strsplit(x, "")[[1]]) %>% 
+  do.call(rbind, .) %>% 
+  data.frame(row.names = names(read.fasta(file.path)))
+}
+
+input <- arrangeFasta("C:/Users/domin/Downloads/rosalind_cons (1).txt")
+
+input[,1:10]
+```
+
+##Function to count number of nt per position
+```{r}
+ntConsensus <- function(position){
+  
+  c("A", "C", "G", "T") %>% 
+    map_int(function(nt) length(which(position == nt)))
+}
+
+nt.counts <- data.frame(map(input, ntConsensus), row.names = c("A:", "C:", "G:", "T:"))
+
+nt.counts[,1:10]
+```
+
+```{r, echo=FALSE, message=FALSE}
+#write.table(nt.counts, "C:/Users/domin/Desktop/nt-counts.txt")
+
+nt.counts <- data.frame(map(input, ntConsensus), row.names = c("A", "C", "G", "T"))
+```
+
+#Grab the most common nt per position
+```{r}
+nt.counts %>% map_chr(function(x) c("A", "C", "G", "T")[which.max(x)]) %>% 
+  cat(sep = "")
+```
+

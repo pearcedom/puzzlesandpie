@@ -1,0 +1,34 @@
+---
+title: Locating Restriction Sites
+author: Dominic Pearce
+output: html_document
+---
+
+```{r}
+library(magrittr)
+library(purrr)
+source("/Volumes/igmm/sims-lab/Dominic/_PhD/Rbits/Functions/revComp.R")
+```
+
+```{r}
+s <- readLines("~/Downloads/rosalind_revp.txt")[-1] %>% paste0(collapse = "")
+
+locateRestrictionSites <- function(s){
+
+    lapply(1:(nchar(s)-3), function(y){
+
+        s.sub <- substring(s,  y,  y+12)
+
+        lengths <- lapply(4:ifelse(nchar(s.sub) < 12, nchar(s.sub), 12), function(x){
+                              identical(revc(substring(s.sub, 1, x)),
+                                        substring(s.sub, 1, x))
+        }
+        )
+
+        ifelse(lengths > 0,  paste(y,  3 + lengths %>% unlist %>% which),  NA) %>% na.omit
+    }
+    ) %>% unlist %>% cat(sep = "\n")
+}
+
+locateRestrictionSites(s)
+```

@@ -1,0 +1,73 @@
+---
+title: "Counting Point Mutations"
+author: "Dominic Pearce"
+date: "5 January 2016"
+output: slidy_presentation
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.align='center')
+```
+
+## Plan
+
+- Split long character strings into individual nucleotides
+- Organise these into individual dataframe cells
+- call ```identical()``` 
+- count how many instances are ```FALSE```
+
+## Split long character strings into individual nucleotides
+
+```{r}
+data <- as.matrix(read.delim("C:/Users/s1460988/Downloads/rosalind_hamm(1).txt", header = FALSE))
+
+data.tmp <- lapply(data, function(x) strsplit(x, ""))
+```
+
+## Split long character strings into individual nucleotides
+
+```{r}
+data[1]
+```
+
+## Split long character strings into individual nucleotides
+
+```{r}
+data.tmp[[1]]
+```
+
+## Organise these into individual dataframe cells
+
+```{r}
+data.split <- as.data.frame(data.tmp, stringsAsFactors = FALSE)
+```
+
+```{r, echo=FALSE}
+colnames(data.split) <- c("A", "B")
+```
+
+## Organise these into individual dataframe cells
+
+```{r}
+head(data.split)
+```
+
+
+## call ```identical()``` on each row individually and assign to a new column
+
+```{r}
+data.split$match <- apply(data.split, 1, function(x) identical(x[[1]], x[[2]]))
+```
+
+## call ```identical()``` on each row individually and assign to a new column
+
+```{r}
+head(data.split)
+```
+
+## count how many instances are ```FALSE```
+
+```{r}
+table(data.split$match)
+```
+

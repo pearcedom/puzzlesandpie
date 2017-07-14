@@ -1,0 +1,40 @@
+---
+title: "Finding DNA Motifs"
+author: "Finding DNA Motifs"
+date: "5 February 2016"
+output:
+    github_document
+---
+
+## Data
+
+```{r}
+haystack <- "GATATATGCATATACTT"
+needle <- "ATAT"
+```
+
+## Split into all possible sections of `length(needle)`
+
+```{r}
+splits <- lapply(0:(nchar(haystack)-nchar(needle)), function(x)
+  substring(haystack, seq((x+1), nchar(haystack), nchar(needle)),
+                      seq((x+nchar(needle)), nchar(haystack), nchar(needle))))
+
+splits
+```
+
+## Find indices of `splits` where `needle` matches a `haystack` section
+```{r}
+split.index <- lapply(lapply(splits, function(x) x == needle), which)
+
+split.index
+```
+
+## Transform `splits` indices to `haystack` indices
+```{r}
+unique(unlist(sapply(1:length(split.index),
+                     function(y) sapply(split.index[[y]],
+                                        function(x) y + (x-1)*nchar(needle) ))))[order(unique(unlist(sapply(1:length(split.index),
+                     function(y) sapply(split.index[[y]],
+                                        function(x) y + (x-1)*nchar(needle) )))))]
+```

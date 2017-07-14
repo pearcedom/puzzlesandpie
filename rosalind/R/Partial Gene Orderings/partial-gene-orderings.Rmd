@@ -1,0 +1,37 @@
+---
+title: "Partial Gene Orderings"
+author: "Dominic Pearce"
+date: "30 April 2016"
+output: html_document
+---
+
+```{r}
+n <- as.numeric(94)
+k <- as.numeric(8)
+
+#par.perm <- list(data.frame(replicate(10000000, sample(1:n, k))))[[1]]
+
+#sorted.perm <- lapply(par.perm, sort)
+
+#length(unique(asdf)) %% 1000000
+
+
+options(scipen = 200)
+
+
+par.perm <- factorial(n)/factorial(n-k)
+
+writeClipboard(as.character(par.perm %% 1000000))
+
+output <- 1
+for (i in 1:n) {
+  step <- i * output 
+  output <- step 
+}
+
+output2 <- 1
+for (i in 1:(n-k)) {
+  step <- i * output2 
+  output2 <- step 
+}
+```

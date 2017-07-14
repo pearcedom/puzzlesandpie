@@ -1,0 +1,82 @@
+---
+title: "Calculating Expected Offspring"
+author: "Dominic Pearce"
+date: "16 February 2016"
+output:
+  prettydoc::html_pretty:
+    highlight: github
+    theme: cayman
+---
+
+```{r, include = FALSE, cache = TRUE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+&nbsp;
+
+Given a parent-couple population defined by the order:
+
+1. AA-AA
+2. AA-Aa
+3. AA-aa
+4. Aa-Aa
+5. Aa-aa
+6. aa-aa
+
+Return the expected number of dominant offspring, given 2 children per parent-couple
+
+&nbsp;
+
+### Libraries
+```{r}
+library(knitr) #for prettier markdown tables
+```
+
+&nbsp;
+
+## First create a `data.frame()` with the probabilities of each parent-couple having a dominant child
+
+```{r}
+probfreq.tbl <- data.frame(p.genotype = c("AA-AA", "AA-Aa", "AA-aa", "Aa-Aa", "Aa-aa", "aa-aa"), prob.dom = c(1, 1, 1, 0.75, 0.5, 0))
+
+kable(probfreq.tbl)
+```
+
+&nbsp;
+
+## Then add our parent-couple frequencies
+### and multiply by two to get the number of children
+
+```{r}
+probfreq.tbl$pop.freq <-  as.numeric(strsplit(readLines("~/Downloads/rosalind_iev.txt"), " ")[[1]])
+
+probfreq.tbl$children <- probfreq.tbl$pop.freq*2
+
+kable(probfreq.tbl)
+```
+
+&nbsp;
+
+## Multiply offspring frequencies by likelyhood of dominant offspring and `Sum()`
+
+```{r}
+probfreq.tbl$children.dom <- probfreq.tbl$prob.dom * probfreq.tbl$children
+
+kable(probfreq.tbl)
+
+sum(probfreq.tbl$children.dom)
+```
+
+&nbsp;
+
+## Clean code
+```{r, eval=FALSE}
+probfreq.tbl <- data.frame(p.genotype = c("AA-AA", "AA-Aa", "AA-aa", "Aa-Aa", "Aa-aa", "aa-aa"),
+                           prob.dom = c(1, 1, 1, 0.75, 0.5, 0),
+                           pop.freq =  as.numeric(strsplit(readLines("~/Downloads/rosalind_iev.txt"), " ")[[1]]))
+
+probfreq.tbl$children <- probfreq.tbl$pop.freq*2
+
+sum(probfreq.tbl$prob.dom * probfreq.tbl$children)
+```
