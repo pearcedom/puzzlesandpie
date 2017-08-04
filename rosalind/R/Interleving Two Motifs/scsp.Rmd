@@ -7,12 +7,19 @@ output:
 
 ```{r}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+```{r}
 library(tidyverse)
 ```
 
 ```{r}
-s <- "ATCTGAT" %>% strsplit("") %>% .[[1]] %>% c("", .)
-t <- "TGCATAAT" %>% strsplit("") %>% .[[1]] %>% c("", .)
+s_base <- "AGGCTCTCCGTAACTATTGGTTAGACTCAATGAAAGCTAACCCCCGCAGTAACTCGTAAGGCTAAGATTGTACCAATATGCGTAGGCGGGA"
+t_base <- "GCTTCAGTATGGGCGTTCCCCGGGTAACAATAGTTTATCTATAATAACACCATATTGCTCGACCGGCCTGTGTCACTTCC"
+
+s <- s_base %>% strsplit("") %>% .[[1]] %>% c("", .)
+t <- t_base %>% strsplit("") %>% .[[1]] %>% c("", .)
+#s <- "ATCTGAT" %>% strsplit("") %>% .[[1]] %>% c("", .)
+#t <- "TGCATAAT" %>% strsplit("") %>% .[[1]] %>% c("", .)
 ```
 
 ```{r, error = TRUE}
@@ -74,7 +81,7 @@ if (length(s) >= length(t)) {
     sub <- s
 }
 
-map_chr(1:length(master), function(x) {
+ans <- map_chr(1:length(master), function(x) {
     ifelse(is.na(master[x]), sub[x], master[x])
     }) %>% .[-1] %>% paste0(collapse = "")
 
