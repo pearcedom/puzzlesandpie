@@ -14,7 +14,7 @@ def reverse_comp(s):
 if __name__ == '__main__':
     with open('data/rosalind_revc.txt', 'r') as ros_in:
         s=ros_in.read().replace('\n', '')
-    reverse_comp(s)
+    print(reverse_comp(s))
 
     #with open('output/revc.txt', 'w') as ros_out:
     #    ros_out.write(reverse_comp(s))
