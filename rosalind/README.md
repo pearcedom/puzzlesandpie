@@ -1,2 +1,1 @@
-# Rosalind
-Rosalind Solutions
+# PUZZLESANDPIE
