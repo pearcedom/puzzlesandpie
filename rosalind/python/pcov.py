@@ -58,7 +58,6 @@ def longest_common_substring(x, y):
     lcs = x[high_col-high_val:high_col]
     return lcs
 
-
 def synthesise_kmers(kmers):
     #take the first kmer
     pcov = kmers[0]
