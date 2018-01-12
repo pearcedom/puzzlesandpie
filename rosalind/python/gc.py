@@ -28,6 +28,3 @@ def get_highest_gc(path):
 
 if __name__ == '__main__':
     print(get_highest_gc('./data/rosalind_gc.txt'))
-
-    
-
