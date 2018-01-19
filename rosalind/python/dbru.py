@@ -4,8 +4,8 @@ from revc import reverse_comp
 
 def dbru(s):
     s_rc = {reverse_comp(i) for i in s} 
-    nodes = s.union(s_rc) 
-    edges = {(i[:-1], i[1:]) for i in nodes}
+    sUs_rc = s.union(s_rc) 
+    edges = {(i[:-1], i[1:]) for i in sUs_rc}
     return edges
 
 if __name__ == '__main__':
